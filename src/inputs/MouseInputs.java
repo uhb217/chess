@@ -9,6 +9,7 @@ import main.Game;
 import main.MainClass;
 import main.Stockfish;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -22,6 +23,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
     private boolean EnableDots = false;
     private int halfMoves = 0;
     private int fullMoves = 1;
+    private double eval = 0;
     CheckDetector cd;
 
 
@@ -82,7 +84,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
                 isFirstClick = !isFirstClick;
                 isWhiteTurn = !isWhiteTurn;
                 System.out.println(Board.getBoard().toFEN());
-                System.out.println("Eval: " + Stockfish.getEval(Stockfish.postRequest(Board.getBoard().toFEN())));
+                eval = Stockfish.getEval(Stockfish.postRequest(Board.getBoard().toFEN()));
+                System.out.println("Eval: " + eval);
                 if (isStalemate(isWhiteTurn()))
                     CheckMate.callDraw("draw by stalemate");
                 else if (!enoughMaterial()) {
@@ -189,4 +192,6 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
     public int getFullMoves() {
         return fullMoves;
     }
+
+    public double getEval() {return eval;}
 }

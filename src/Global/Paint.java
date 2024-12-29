@@ -33,7 +33,7 @@ public class Paint {
 
 
         g.setColor(Color.WHITE);
-        g.drawString("  -♙♖♘♗♕♔♗♘♖♙---------Chess Nate --------♟♜♞♝♛♚♝♞♜♟-  ", 0, 200);
+        g.drawString("  ♖♙----------♙♖♘♗♕♔♗♘Chess Nate --------♟♜♞♝♛♚♝♞♜♟-  ", 0, 200);
 
 
         g.setColor(grey);
@@ -75,7 +75,21 @@ public class Paint {
 
         turn = mouseInputs.isWhiteTurn() ? ChessColor.WHITE : ChessColor.BLACK;
         cd.restrictMovesInCheck(board, turn);
+        g.setColor(Color.BLACK);
+        g.fillRect(400,150,30,500);
 
+        paintEvalBar(g, mouseInputs.getEval());
+
+    }
+    private static void paintEvalBar(Graphics g, double eval){
+        g.setColor(Color.WHITE);
+        g.fillRect(400,150,30,500);
+        g.setColor(Color.BLACK);
+        g.fillRect(400,150,30, (int) (2.5 * -eval + 250));
+        //draw text
+        g.setColor(Color.RED);
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+        g.drawString("Eval: " + (eval>=0? "+" + eval: eval), 385, 406);
 
     }
 }
