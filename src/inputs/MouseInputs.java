@@ -19,6 +19,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
     private Piece currPiece;
     private Square currSquare;
     private boolean EnableDots = false;
+    private int halfMoves = 0;
+    private int fullMoves = 1;
     CheckDetector cd;
 
 
@@ -30,7 +32,6 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
 
     }
-
 
     @Override
     public void mouseMoved(MouseEvent e) {
@@ -61,7 +62,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
                 return;
 
             isFirstClick = !isFirstClick;
-        } catch (Exception _) {}
+        } catch (Exception _) {
+        }
 
     }
 
@@ -74,15 +76,16 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
         try {
             currSquare = board.getSquare(e.getX(), e.getY());
             if (currPiece.getLegalMoves().contains(currSquare)) {
-                currPiece.move(currSquare, board);
+                halfMoves = currPiece.move(currSquare, board)? 0: halfMoves + 1;
+                if (!isIsWhiteTurn()) fullMoves++;
                 isFirstClick = !isFirstClick;
                 isWhiteTurn = !isWhiteTurn;
+                System.out.println(Board.getBoard().toFEN());
                 if (isStalemate(isWhiteTurn()))
                     CheckMate.callDraw("draw by stalemate");
-                else  if (!enoughMaterial()){
+                else if (!enoughMaterial()) {
                     CheckMate.callDraw("draw by influence material");
-                }
-                else {
+                } else {
                     cd = Game.getGamePanel().getCd();
                     cd.checkForMate();
                 }
@@ -91,7 +94,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
                     doFirstClick(e);
                     EnableDots = true;
                 }
-        } catch (Exception _) { }
+        } catch (Exception _) {
+        }
 
     }
 
@@ -111,6 +115,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
         }
         return true;
     }
+
     private boolean enoughMaterial() {
 
         int WBidhops = 0;
@@ -149,31 +154,16 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
             doSecondClick(e);
             EnableDots = false;
         }
-
-
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-
-
-    }
-
+    public void mouseReleased(MouseEvent e) {}
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
-
+    public void mouseDragged(MouseEvent e) {}
     @Override
-    public void mouseEntered(MouseEvent e) {
-
-
-    }
-
+    public void mouseEntered(MouseEvent e) {}
     @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
+    public void mouseExited(MouseEvent e) {}
 
     public boolean EnableDots() {
         return EnableDots;
@@ -185,5 +175,16 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     public boolean isWhiteTurn() {
         return isWhiteTurn;
+    }
+    public static boolean isIsWhiteTurn() {
+        return isWhiteTurn;
+    }
+
+    public int getHalfMoves() {
+        return halfMoves;
+    }
+
+    public int getFullMoves() {
+        return fullMoves;
     }
 }

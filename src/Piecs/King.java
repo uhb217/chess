@@ -95,7 +95,7 @@ public class King extends Piece {
         return List.of();
     }
 
-    private boolean canCastle(Square[][] squaresBoard, int x, int y, boolean kingSide) {
+    public boolean canCastle(Square[][] squaresBoard, int x, int y, boolean kingSide) {
         int rookX = kingSide ? 7 : 0;
         int direction = kingSide ? 1 : -1;
 

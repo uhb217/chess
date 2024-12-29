@@ -45,7 +45,7 @@ public abstract class Piece {
     public boolean move(Square fin, Board board) {
         Square[][] squareBoard = getSquaresBoard();
         Piece occup = fin.getOccupyingPiece();
-
+        boolean halfMove = false;
 
         if (occup != null) {
             if (occup.getColor() == this.color) return false;
@@ -53,7 +53,10 @@ public abstract class Piece {
                 System.out.println("Cannot capture protected piece.");
                 return false;
             }
-            else fin.capture(this, board);
+            else {
+                fin.capture(this, board);
+                halfMove = true;//half move rule
+            }
         }
 
         if (this instanceof King king) {
@@ -127,7 +130,7 @@ public abstract class Piece {
 
 
 
-        if (this instanceof Pawn) {
+        if (this instanceof Pawn) { //enPassant capture
             Pawn lastMoved = Board.getBoard().getLastMovedPawn();
             if (lastMoved != null && lastMoved.getColor() != this.getColor()) {
                 if (lastMoved.getColor() == BLACK && lastMoved.getPosition().getXNum() == this.getPosition().getXNum() && lastMoved.getPosition().getYNum() == this.getPosition().getYNum() - 1) {
@@ -137,9 +140,11 @@ public abstract class Piece {
                     lastMoved.getPosition().capture(null, board);
                 }
             }
+            halfMove = true;//half move rule
         }
         Board.getBoard().setLastMovedPawn(null);
-        return true;
+
+        return halfMove;
     }
 
 
@@ -483,5 +488,17 @@ public abstract class Piece {
 
     public boolean isForcedSquares() {
         return gamePanel.isForcedSquaresForColor(this.getColor());
+    }
+    public char toFEN() {
+        char key = switch (this.getClass().getSimpleName()) {
+            case "Pawn" -> 'P';
+            case "Rook" -> 'R';
+            case "Knight" -> 'N';
+            case "Bishop" -> 'B';
+            case "Queen" -> 'Q';
+            case "King" -> 'K';
+            default -> ' ';
+        };
+        return this.getColor().equals(BLACK) ? Character.toLowerCase(key) : key;
     }
 }

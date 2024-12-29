@@ -1,9 +1,7 @@
 package Board;
 
-import Piecs.ChessColor;
-import Piecs.King;
-import Piecs.Pawn;
-import Piecs.Piece;
+import Piecs.*;
+import main.GamePanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +9,8 @@ import java.util.List;
 import static main.GameWindow.*;
 
 public class Board {
-
-  private static  King wKing , bKing;
+    private GamePanel gamePanel;
+    private static King wKing, bKing;
     private static final Board board;
     public static final Square[][] SquaresBoard = new Square[8][8];
     private static final int SideOfSquare = 87;
@@ -24,10 +22,8 @@ public class Board {
     private Board() {
         for (int yNum = 0; yNum < 8; yNum++)
             for (int xNum = 0; xNum < 8; xNum++)
-                SquaresBoard[yNum][xNum] = new Square(yNum, xNum,  (WINDOW_WIDTH - 790) + SideOfSquare * xNum, (WINDOW_HEIGHT - 60) - SideOfSquare * (yNum+1));
+                SquaresBoard[yNum][xNum] = new Square(yNum, xNum, (WINDOW_WIDTH - 790) + SideOfSquare * xNum, (WINDOW_HEIGHT - 60) - SideOfSquare * (yNum + 1));
     }
-
-
 
 
     public ArrayList<Piece> getWPieces() {
@@ -46,12 +42,12 @@ public class Board {
         return SquaresBoard;
     }
 
-    public Square getSquare(int x, int y){
+    public Square getSquare(int x, int y) {
         for (Square[] squares : SquaresBoard)
             for (Square square : squares)
-                if (square.isInSquare(x,y))
+                if (square.isInSquare(x, y))
                     return square;
-       return null;
+        return null;
     }
 
 
@@ -75,7 +71,7 @@ public class Board {
             if (WPiece instanceof King king)
                 wKing = king;
         for (Piece BPiece : board.BPieces)
-            if (BPiece instanceof  King king)
+            if (BPiece instanceof King king)
                 bKing = king;
     }
 
@@ -95,7 +91,7 @@ public class Board {
             if (WPiece instanceof King king)
                 wKing = king;
         for (Piece BPiece : board.BPieces)
-            if (BPiece instanceof  King king)
+            if (BPiece instanceof King king)
                 bKing = king;
 
         wKing.stopCheck();
@@ -123,7 +119,7 @@ public class Board {
             if (WPiece instanceof King king)
                 wKing = king;
         for (Piece BPiece : board.BPieces)
-            if (BPiece instanceof  King king)
+            if (BPiece instanceof King king)
                 bKing = king;
 
         if (color.equals(ChessColor.WHITE))
@@ -131,7 +127,42 @@ public class Board {
         else return bKing;
     }
 
-    public static int getSideOfSquare(){
+    public String toFEN() {
+        StringBuilder fen = new StringBuilder();
+        int emptySquares = 0;
+        for (int y = 7; y >= 0; y--) {
+            for (int x = 0; x < 8; x++) {
+                Square square = SquaresBoard[y][x];
+                if (square.isOccupied()) {
+                    if (emptySquares > 0) {
+                        fen.append(emptySquares);
+                        emptySquares = 0;
+                    }
+                    fen.append(square.getOccupyingPiece().toFEN());
+                } else
+                    emptySquares++;
+            }
+            if (emptySquares > 0) {
+                fen.append(emptySquares);
+                emptySquares = 0;
+            }
+            if (y != 0)
+                fen.append("/");
+        }
+        fen.append(" ");
+        fen.append(gamePanel.isWhiteTurn() ? "w" : "b");
+        fen.append(" ");
+        fen.append(castlingRights2FEN());
+        fen.append(" ");
+        fen.append(enPassantSquare2FEN());
+        fen.append(" ");
+        fen.append(gamePanel.getMouseInputs().getHalfMoves());
+        fen.append(" ");
+        fen.append(gamePanel.getMouseInputs().getFullMoves());
+        return fen.toString();
+    }
+
+    public static int getSideOfSquare() {
         return SideOfSquare;
     }
 
@@ -141,5 +172,33 @@ public class Board {
 
     public void setLastMovedPawn(Pawn lastMovedPawn) {
         this.lastMovedPawn = lastMovedPawn;
+    }
+
+    public void setGamePanel(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
+    }
+    private String castlingRights2FEN() {
+        StringBuilder castleRights = new StringBuilder();
+        if (!wKing.wasMoved()) { // if the king is still in its initial position and hasn't moved
+            // if the rooks is still in its initial position and hasn't moved
+            if (getSquaresBoard()[0][7].getOccupyingPiece() instanceof Rook rook && !rook.wasMoved()) castleRights.append("K");
+            if (getSquaresBoard()[0][0].getOccupyingPiece() instanceof Rook rook && !rook.wasMoved()) castleRights.append("Q");
+        }
+        if (!bKing.wasMoved()) { // if the king is still in its initial position and hasn't moved
+            // if the rooks is still in its initial position and hasn't moved
+            if (getSquaresBoard()[7][7].getOccupyingPiece() instanceof Rook rook && !rook.wasMoved()) castleRights.append("k");
+            if (getSquaresBoard()[7][0].getOccupyingPiece() instanceof Rook rook && !rook.wasMoved()) castleRights.append("q");
+        }
+        return castleRights.toString();
+    }
+    private String enPassantSquare2FEN() {
+        if (lastMovedPawn != null ){
+            int x = lastMovedPawn.getPosition().getXNum();
+            if (lastMovedPawn.getColor() == ChessColor.WHITE && (getSquaresBoard()[3][x+1].getOccupyingPiece() instanceof Pawn || getSquaresBoard()[3][x-1].getOccupyingPiece() instanceof Pawn))
+                return (char) ('a' + x) + "3";
+            if (lastMovedPawn.getColor() == ChessColor.BLACK && (getSquaresBoard()[4][x+1].getOccupyingPiece() instanceof Pawn || getSquaresBoard()[4][x-1].getOccupyingPiece() instanceof Pawn))
+                return (char) ('a' + x) + "6";
+        }
+        return "-";
     }
 }

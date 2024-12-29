@@ -19,7 +19,6 @@ public class Pawn extends Piece{
 
     @Override
     public boolean move(Square fin, Board board) {
-        int lastX = this.getPosition().getXNum();
         int lastY = this.getPosition().getYNum();
         super.move(fin, board);
         if (lastY + 2 == this.getPosition().getYNum() || lastY - 2 == this.getPosition().getYNum()){
@@ -44,7 +43,7 @@ public class Pawn extends Piece{
                     legalMoves.add(board[y + 2][x]);
                 }
             }
-            //unPassant
+            //enPassant
             try {
                 Piece lastPiece = Board.getBoard().getLastMovedPawn();
                 if (lastPiece.getColor() == BLACK) {
@@ -85,7 +84,7 @@ public class Pawn extends Piece{
                 }
             }
 
-            //unPassant
+            //enPassant
             try {
                 Piece lastPiece = Board.getBoard().getLastMovedPawn();
                 if (lastPiece.getColor() == WHITE) {

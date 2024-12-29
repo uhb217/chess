@@ -25,7 +25,7 @@ public class GamePanel extends JPanel {
     private final Square[][] SquaresBoard;
     private final LoadSave loadSave;
     public static int BOARD_WIDTH = 700, BOARD_HEIGHT = 700;
-   private State state;
+    private State state;
 
     final Clock WClock;
     final Clock BClock;
@@ -49,6 +49,7 @@ public class GamePanel extends JPanel {
     public GamePanel() {
         loadSave = getLoadSave();
         board = getBoard();
+        board.setGamePanel(this);
         SquaresBoard = getSquaresBoard();
         mouseInputs = new MouseInputs(board);
         WClock = new Clock(10, 0, ChessColor.WHITE);
@@ -66,9 +67,9 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        switch (state){
+        switch (state) {
             case Game:
-                Paint.PaintGame(g,g2d,grey,mouseInputs,WClock,BClock,board,turn,cd);
+                Paint.PaintGame(g, g2d, grey, mouseInputs, WClock, BClock, board, turn, cd);
             case Login:
                 Paint.PaintLogin(g);
         }
