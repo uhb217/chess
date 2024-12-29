@@ -6,6 +6,8 @@ import main.GamePanel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Piecs.ChessColor.BLACK;
+import static Piecs.ChessColor.WHITE;
 import static main.GameWindow.*;
 
 public class Board {
@@ -53,8 +55,8 @@ public class Board {
 
     public List<Piece> getCheckingPieces(ChessColor kingColor) {
         List<Piece> checkingPieces = new ArrayList<>();
-        King king = kingColor == ChessColor.WHITE ? wKing : bKing;
-        List<Piece> opponentPieces = kingColor == ChessColor.WHITE ? WPieces : BPieces;
+        King king = kingColor == WHITE ? wKing : bKing;
+        List<Piece> opponentPieces = kingColor == WHITE ? WPieces : BPieces;
 
         for (Piece piece : opponentPieces) {
             if (piece.getRawLegalMoves().contains(king.getPosition())) {
@@ -122,7 +124,7 @@ public class Board {
             if (BPiece instanceof King king)
                 bKing = king;
 
-        if (color.equals(ChessColor.WHITE))
+        if (color.equals(WHITE))
             return wKing;
         else return bKing;
     }
@@ -194,9 +196,9 @@ public class Board {
     private String enPassantSquare2FEN() {
         if (lastMovedPawn != null ){
             int x = lastMovedPawn.getPosition().getXNum();
-            if (lastMovedPawn.getColor() == ChessColor.WHITE && (getSquaresBoard()[3][x+1].getOccupyingPiece() instanceof Pawn || getSquaresBoard()[3][x-1].getOccupyingPiece() instanceof Pawn))
+            if (lastMovedPawn.getColor() == WHITE && ((getSquaresBoard()[3][x+1].getOccupyingPiece() instanceof Pawn pawn && pawn.getColor() == BLACK)|| (getSquaresBoard()[3][x-1].getOccupyingPiece() instanceof Pawn pawn1 && pawn1.getColor() == BLACK)))
                 return (char) ('a' + x) + "3";
-            if (lastMovedPawn.getColor() == ChessColor.BLACK && (getSquaresBoard()[4][x+1].getOccupyingPiece() instanceof Pawn || getSquaresBoard()[4][x-1].getOccupyingPiece() instanceof Pawn))
+            if (lastMovedPawn.getColor() == BLACK && ((getSquaresBoard()[4][x+1].getOccupyingPiece() instanceof Pawn pawn && pawn.getColor() == WHITE)|| (getSquaresBoard()[4][x-1].getOccupyingPiece() instanceof Pawn pawn1 && pawn1.getColor() == WHITE)))
                 return (char) ('a' + x) + "6";
         }
         return "-";

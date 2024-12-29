@@ -7,6 +7,7 @@ import Detectores.CheckMate;
 import Piecs.*;
 import main.Game;
 import main.MainClass;
+import main.Stockfish;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -81,6 +82,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
                 isFirstClick = !isFirstClick;
                 isWhiteTurn = !isWhiteTurn;
                 System.out.println(Board.getBoard().toFEN());
+                System.out.println("Eval: " + Stockfish.getEval(Stockfish.postRequest(Board.getBoard().toFEN())));
                 if (isStalemate(isWhiteTurn()))
                     CheckMate.callDraw("draw by stalemate");
                 else if (!enoughMaterial()) {
