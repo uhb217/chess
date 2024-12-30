@@ -111,12 +111,16 @@ public class King extends Piece {
         }
         if (this.getColor() == ChessColor.WHITE){
             for (Piece piece : Board.getBoard().getBPieces()) {
+                if (piece instanceof King)
+                    continue;
                 if (piece.getRawLegalMoves().contains(squaresBoard[y][x]) || piece.getRawLegalMoves().contains(squaresBoard[y][x + direction])) {
                     return false;
                 }
             }
         }else {
             for (Piece piece : Board.getBoard().getWPieces()) {
+                if (piece instanceof King)
+                    continue;
                 if (piece.getRawLegalMoves().contains(squaresBoard[y][x]) || piece.getRawLegalMoves().contains(squaresBoard[y][x + direction])) {
                     return false;
                 }
